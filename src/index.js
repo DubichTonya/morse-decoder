@@ -38,44 +38,26 @@ const MORSE_TABLE = {
 };
 
 function decode(expr) {
+  let words = expr.replace(/\*{10}/g, ' ').split(' ')
   let result = ''
-expr = expr.replace(/\*{10}/g, ' ')
-let words = expr.split(' ')
+  for(let i = 0; i < words.length; i++) {
 
-for(let i = 0; i < words.length; i++){
-  let subWords = words[i].replace(/.{2}/g, '$& ').trim().split(' ');
-  for(let j = 0; j < subWords.length; j++){
-    if(subWords[j] === '10') {
-      subWords[j] = '.'
-    } else if(subWords[j] === '11') {
-      subWords[j] = '-'
-    }
-  }
-  subWords = subWords.join('').replace(/0/g, ' ').split(' ');
-
-  subWords = subWords.filter((item) => {
-    if (item !== '') {
-      return item;
-    }
-  })
-
-  for(let key in MORSE_TABLE) {
-
-    for(let n = 0; n < subWords.length; n++) {
-      if(subWords[n].length > 6) {
-        subWords = subWords[n].match(/.{5}/g)
-      }
-      if(subWords[n] === key){
-        subWords[n] = MORSE_TABLE[key]
+    words[i] = words[i].match(/.{10}/g);
+    for(let j = 0; j < words[i].length; j++){
+      words[i][j] = words[i][j].replace(/10/g, '.')
+      words[i][j] = words[i][j].replace(/11/g, '-')
+      words[i][j] = words[i][j].replace(/0/g, '')
+      
+      for(let key in MORSE_TABLE) {
+        if(words[i][j] === key) {
+          words[i][j] = MORSE_TABLE[key]
+        }
       }
     }
+    words[i] = words[i].join('')
+    result += words[i] + ' '
   }
-
-  result += subWords.join('') + ' '
-}
-
-
-return result.trim()
+  return result.trim()
 }
 
 module.exports = {
